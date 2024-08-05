@@ -40,6 +40,7 @@ function update_chams()
                     if not highlight then
                         highlight = Instance.new("Highlight")
                         highlight.Parent = player.Character
+                        print("Highlight created for player:", player.Name)
                     end
                     highlight.FillColor = ChamsModule.features.chams.color.fill
                     highlight.OutlineColor = ChamsModule.features.chams.color.outline
@@ -48,13 +49,17 @@ function update_chams()
                 else
                     if highlight then
                         highlight:Destroy()
+                        print("Highlight destroyed for player:", player.Name)
                     end
                 end
             else
                 if highlight then
                     highlight:Destroy()
+                    print("Highlight destroyed for player:", player.Name)
                 end
             end
+        else
+            print("Player character not found for player:", player.Name)
         end
     end
 end
