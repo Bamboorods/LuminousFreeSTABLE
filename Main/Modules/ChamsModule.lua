@@ -1,35 +1,33 @@
 local ChamsModule = {}
-
+warn("ChamsModuleLoaded")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local features = {
+
+ChamsModule.features = {
     chams = {
         enabled = false,
         teamcheck = false,
-        color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
-        transparency = {fill = 0.74, outline = 0.38}
+        color = {
+            fill = Color3.new(1, 1, 1),
+            outline = Color3.new(0, 0, 0)
+        },
+        fill = {
+            transparency = 0.5
+        },
+        transparency = {
+            outline = 0.5
+        }
     }
 }
 
 local function get_players()
-    local entity_list = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player:IsA("Model") then
-            table.insert(entity_list, player)
-        end
-    end
-    return entity_list
+    return Players:GetPlayers()
 end
 
 local function is_ally(player)
-    if not player then return false end
-
-    local helmet = player:FindFirstChildWhichIsA("Folder"):FindFirstChildOfClass("MeshPart")
-    if not helmet then return false end
-
-    return helmet.BrickColor == BrickColor.new("Black") and LocalPlayer.Team == "Phantoms" or LocalPlayer.Team == "Ghosts"
+    return player.Team == LocalPlayer.Team
 end
 
 local function update_chams()
@@ -61,18 +59,33 @@ local function update_chams()
 end
 
 function ChamsModule.setChamsEnabled(value)
-    features.chams.enabled = value
+    ChamsModule.features.chams.enabled = value
     update_chams()
 end
 
-function ChamsModule.isChamsEnabled()
-    return features.chams.enabled
+function ChamsModule.setTeamCheckEnabled(value)
+    ChamsModule.features.chams.teamcheck = value
+    update_chams()
 end
 
-RunService.RenderStepped:Connect(function()
-    if features.chams.enabled then
-        update_chams()
-    end
-end)
+function ChamsModule.setFillColor(color)
+    ChamsModule.features.chams.color.fill = color
+    update_chams()
+end
+
+function ChamsModule.setOutlineColor(color)
+    ChamsModule.features.chams.color.outline = color
+    update_chams()
+end
+
+function ChamsModule.setFillTransparency(value)
+    ChamsModule.features.chams.transparency.fill = value
+    update_chams()
+end
+
+function ChamsModule.setOutlineTransparency(value)
+    ChamsModule.features.chams.transparency.outline = value
+    update_chams()
+end
 
 return ChamsModule
