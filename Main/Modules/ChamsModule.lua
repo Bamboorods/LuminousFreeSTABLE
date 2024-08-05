@@ -13,10 +13,8 @@ ChamsModule.features = {
             fill = Color3.new(0, 7, 167),
             outline = Color3.new(0, 18, 64)
         },
-        fill = {
-            transparency = 0.74
-        },
-        transparency = {  -- Corrected this part
+        transparency = {
+            fill = 0.74,
             outline = 0.38
         }
     }
@@ -45,8 +43,8 @@ function update_chams()
                     end
                     highlight.FillColor = ChamsModule.features.chams.color.fill
                     highlight.OutlineColor = ChamsModule.features.chams.color.outline
-                    highlight.FillTransparency = ChamsModule.features.chams.fill.transparency
-                    highlight.OutlineTransparency = ChamsModule.features.chams.transparency.outline  -- Corrected this part
+                    highlight.FillTransparency = ChamsModule.features.chams.transparency.fill
+                    highlight.OutlineTransparency = ChamsModule.features.chams.transparency.outline
                 else
                     if highlight then
                         highlight:Destroy()
@@ -82,12 +80,12 @@ function ChamsModule.setOutlineColor(color)
 end
 
 function ChamsModule.setFillTransparency(value)
-    ChamsModule.features.chams.fill.transparency = value  -- Corrected this part
+    ChamsModule.features.chams.transparency.fill = value
     update_chams()
 end
 
 function ChamsModule.setOutlineTransparency(value)
-    ChamsModule.features.chams.transparency.outline = value  -- Corrected this part
+    ChamsModule.features.chams.transparency.outline = value
     update_chams()
 end
 
@@ -96,5 +94,5 @@ RunService.RenderStepped:Connect(function()
         update_chams()
     end
 end)
-run_service.RenderStepped:Connect(update_chams)
+
 return ChamsModule
