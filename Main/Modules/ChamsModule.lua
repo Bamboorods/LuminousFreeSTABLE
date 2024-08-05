@@ -29,7 +29,7 @@ local function get_players()
     return Players_service:GetPlayers() 
 end
 
-local function is_ally(player)
+local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
     return player.Team == LocalPlayer.Team
 end
 
