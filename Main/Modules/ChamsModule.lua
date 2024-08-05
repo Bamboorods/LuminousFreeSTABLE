@@ -10,8 +10,8 @@ ChamsModule.features = {
         enabled = false,
         teamcheck = false,
         color = {
-            fill = Color3.new(0, 7, 167),
-            outline = Color3.new(0, 18, 64)
+            fill = Color3.fromRGB(0, 7, 167),
+            outline = Color3.fromRGB(0, 18, 64)
         },
         transparency = {
             fill = 0.74,
