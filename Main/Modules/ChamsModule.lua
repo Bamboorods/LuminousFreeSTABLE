@@ -1,3 +1,4 @@
+warn("ChamsModuleLoaded")
 --// Services
 local Players_service = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -5,11 +6,8 @@ local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
 
---// Variables
-local LocalPlayer = Players_service.LocalPlayer
-
 --// Tables
-local ChamsModule = {}
+ChamsModule = {}
 ChamsModule.features = {
     chams = {
         enabled = false,
@@ -31,29 +29,33 @@ local function get_players()
 end
 
 local function is_ally(player)
-    return player and player.Team and LocalPlayer and LocalPlayer.Team and player.Team == LocalPlayer.Team
+    return player.Team == Players_service.LocalPlayer.Team
 end
 
-local function apply_highlight(player)
-    if not player then return end
-    
-    local function handle_character(character)
-        if not character then return end
-        
-        local highlight = character:FindFirstChildWhichIsA("Highlight")
-        if ChamsModule.features.chams.enabled then
-            local ally = is_ally(player)
-            local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
-            if should_highlight then
-                if not highlight then
-                    highlight = Instance.new("Highlight")
-                    highlight.Parent = character
-                    print("Highlight created for player:", player.Name)
+function update_chams()
+    for _, player in pairs(get_players()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local highlight = player.Character:FindFirstChildWhichIsA("Highlight")
+            if ChamsModule.features.chams.enabled then
+                local ally = is_ally(player)
+                local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
+
+                if should_highlight then
+                    if not highlight then
+                        highlight = Instance.new("Highlight")
+                        highlight.Parent = player.Character
+                        print("Highlight created for player:", player.Name)
+                    end
+                    highlight.FillColor = ChamsModule.features.chams.color.fill
+                    highlight.OutlineColor = ChamsModule.features.chams.color.outline
+                    highlight.FillTransparency = ChamsModule.features.chams.ctransparency.fill
+                    highlight.OutlineTransparency = ChamsModule.features.chams.ctransparency.outline
+                else
+                    if highlight then
+                        highlight:Destroy()
+                        print("Highlight destroyed for player:", player.Name)
+                    end
                 end
-                highlight.FillColor = ChamsModule.features.chams.color.fill
-                highlight.OutlineColor = ChamsModule.features.chams.color.outline
-                highlight.FillTransparency = ChamsModule.features.chams.ctransparency.fill
-                highlight.OutlineTransparency = ChamsModule.features.chams.ctransparency.outline
             else
                 if highlight then
                     highlight:Destroy()
@@ -61,30 +63,8 @@ local function apply_highlight(player)
                 end
             end
         else
-            if highlight then
-                highlight:Destroy()
-                print("Highlight destroyed for player:", player.Name)
-            end
+            print("Player character not found or not fully loaded for player:", player.Name)
         end
-    end
-    
-    if player.Character then
-        handle_character(player.Character)
-    end
-    
-    player.CharacterAdded:Connect(handle_character)
-    player.CharacterRemoving:Connect(function(character)
-        local highlight = character:FindFirstChildWhichIsA("Highlight")
-        if highlight then
-            highlight:Destroy()
-            print("Highlight destroyed for leaving player:", player.Name)
-        end
-    end)
-end
-
-local function update_chams()
-    for _, player in ipairs(get_players()) do
-        apply_highlight(player)
     end
 end
 
@@ -118,13 +98,10 @@ function ChamsModule.setOutlineTransparency(value)
     update_chams()
 end
 
-Players_service.PlayerAdded:Connect(apply_highlight)
-
 RunService.RenderStepped:Connect(function()
     if ChamsModule.features.chams.enabled then
         update_chams()
     end
 end)
 
-warn("ChamsModuleLoaded")
 return ChamsModule
