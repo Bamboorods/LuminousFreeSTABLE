@@ -4,20 +4,17 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-
 ChamsModule.features = {
     chams = {
         enabled = false,
         teamcheck = false,
         color = {
-            fill = Color3.new(1, 1, 1),
-            outline = Color3.new(0, 0, 0)
-        },
-        fill = {
-            transparency = 0.5
+            fill = Color3.fromRGB(0, 7, 167),
+            outline = Color3.fromRGB(0, 18, 64)
         },
         transparency = {
-            outline = 0.5
+            fill = 0.74,
+            outline = 0.38
         }
     }
 }
@@ -33,18 +30,18 @@ end
 local function update_chams()
     for _, player in pairs(get_players()) do
         local highlight = player:FindFirstChildWhichIsA("Highlight")
-        if features.chams.enabled then
+        if ChamsModule.features.chams.enabled then
             local ally = is_ally(player)
-            local should_highlight = not features.chams.teamcheck or (features.chams.teamcheck and not ally)
+            local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
             
             if should_highlight then
                 if not highlight then
                     highlight = Instance.new("Highlight", player)
                 end
-                highlight.FillColor = features.chams.color.fill
-                highlight.OutlineColor = features.chams.color.outline
-                highlight.FillTransparency = features.chams.transparency.fill
-                highlight.OutlineTransparency = features.chams.transparency.outline
+                highlight.FillColor = ChamsModule.features.chams.color.fill
+                highlight.OutlineColor = ChamsModule.features.chams.color.outline
+                highlight.FillTransparency = ChamsModule.features.chams.transparency.fill
+                highlight.OutlineTransparency = ChamsModule.features.chams.transparency.outline
             else
                 if highlight then
                     highlight:Destroy()
