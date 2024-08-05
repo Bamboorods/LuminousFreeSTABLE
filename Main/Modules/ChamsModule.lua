@@ -1,9 +1,15 @@
-warn("ChamsModuleLoaded")
-
+--// Services
+local Players_service = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 
+--// Variables
+local LocalPlayer = Players_service.LocalPlayer
+local Players = Players_service
+
+--// Tables
 ChamsModule = {}
 ChamsModule.features = {
     chams = {
@@ -20,6 +26,7 @@ ChamsModule.features = {
     }
 }
 
+--// Functions
 local function get_players()
     return Players:GetPlayers()
 end
@@ -100,4 +107,5 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+warn("ChamsModuleLoaded")
 return ChamsModule
