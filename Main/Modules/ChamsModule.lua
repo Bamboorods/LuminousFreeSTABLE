@@ -1,10 +1,12 @@
-warn("ChamsModuleLoaded")
+
 --// Services
 local Players_service = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
+
+local player = Players_service.LocalPlayer
 
 --// Tables
 ChamsModule = {}
@@ -25,16 +27,16 @@ ChamsModule.features = {
 
 --// Functions
 local function get_players()
-    return Players_service:GetPlayers()
+    return Players:GetPlayers()
 end
 
 local function is_ally(player)
-    return player.Team == Players_service.LocalPlayer.Team
+    return player.Team == LocalPlayer.Team
 end
 
 function update_chams()
     for _, player in pairs(get_players()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if player.Character then
             local highlight = player.Character:FindFirstChildWhichIsA("Highlight")
             if ChamsModule.features.chams.enabled then
                 local ally = is_ally(player)
@@ -63,7 +65,7 @@ function update_chams()
                 end
             end
         else
-            print("Player character not found or not fully loaded for player:", player.Name)
+            print("Player character not found for player:", player.Name)
         end
     end
 end
@@ -103,5 +105,5 @@ RunService.RenderStepped:Connect(function()
         update_chams()
     end
 end)
-
+warn("ChamsModuleLoaded")
 return ChamsModule
