@@ -4,8 +4,7 @@ local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
-
-local player = Players_service.LocalPlayer
+local player = Players_service.LocalPlayer or Players_service.LocalPlayer:wait();
 
 --// Tables
 ChamsModule = {}
