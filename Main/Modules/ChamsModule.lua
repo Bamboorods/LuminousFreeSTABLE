@@ -7,10 +7,9 @@ local RunService = game:GetService("RunService")
 
 --// Variables
 local LocalPlayer = Players_service.LocalPlayer
-local Players = Players_service:GetPlayers()
 
 --// Tables
-ChamsModule = {}
+local ChamsModule = {}
 ChamsModule.features = {
     chams = {
         enabled = false,
@@ -39,11 +38,9 @@ local function apply_highlight(player)
     if player and player.Character then
         local character = player.Character
         local highlight = character:FindFirstChildWhichIsA("Highlight")
-
         if ChamsModule.features.chams.enabled then
             local ally = is_ally(player)
             local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
-
             if should_highlight then
                 if not highlight then
                     highlight = Instance.new("Highlight")
@@ -74,8 +71,8 @@ local function apply_highlight(player)
     end
 end
 
-function update_chams()
-    for _, player in pairs(get_players()) do
+local function update_chams()
+    for _, player in ipairs(get_players()) do
         apply_highlight(player)
     end
 end
