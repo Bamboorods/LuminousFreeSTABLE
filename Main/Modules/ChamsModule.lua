@@ -1,10 +1,12 @@
+
 --// Services
 local Players_service = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
 local RunService = game:GetService("RunService")
-local player = Players_service.LocalPlayer or Players_service.LocalPlayer:wait();
+
+local player = Players_service.LocalPlayer
 
 --// Tables
 ChamsModule = {}
@@ -25,7 +27,7 @@ ChamsModule.features = {
 
 --// Functions
 local function get_players()
-    return Players:GetPlayers()
+    return Players_service:GetPlayers()
 end
 
 local function is_ally(player)
@@ -34,7 +36,7 @@ end
 
 function update_chams()
     for _, player in pairs(get_players()) do
-        if player.Character or player.CharacterAdded:wait() then
+        if player.Character then
             local highlight = player.Character:FindFirstChildWhichIsA("Highlight")
             if ChamsModule.features.chams.enabled then
                 local ally = is_ally(player)
