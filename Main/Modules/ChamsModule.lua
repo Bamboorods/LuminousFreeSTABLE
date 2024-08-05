@@ -31,12 +31,15 @@ local function get_players()
 end
 
 local function is_ally(player)
-    return player.Team == LocalPlayer.Team
+    return player and player.Team and LocalPlayer and LocalPlayer.Team and player.Team == LocalPlayer.Team
 end
 
 local function apply_highlight(player)
-    if player and player.Character then
-        local character = player.Character
+    if not player then return end
+    
+    local function handle_character(character)
+        if not character then return end
+        
         local highlight = character:FindFirstChildWhichIsA("Highlight")
         if ChamsModule.features.chams.enabled then
             local ally = is_ally(player)
@@ -63,12 +66,20 @@ local function apply_highlight(player)
                 print("Highlight destroyed for player:", player.Name)
             end
         end
-    else
-        print("Player character not found or not yet loaded for player:", player.Name)
-        player.CharacterAdded:Connect(function(character)
-            apply_highlight(player)
-        end)
     end
+    
+    if player.Character then
+        handle_character(player.Character)
+    end
+    
+    player.CharacterAdded:Connect(handle_character)
+    player.CharacterRemoving:Connect(function(character)
+        local highlight = character:FindFirstChildWhichIsA("Highlight")
+        if highlight then
+            highlight:Destroy()
+            print("Highlight destroyed for leaving player:", player.Name)
+        end
+    end)
 end
 
 local function update_chams()
@@ -106,6 +117,8 @@ function ChamsModule.setOutlineTransparency(value)
     ChamsModule.features.chams.ctransparency.outline = value
     update_chams()
 end
+
+Players_service.PlayerAdded:Connect(apply_highlight)
 
 RunService.RenderStepped:Connect(function()
     if ChamsModule.features.chams.enabled then
