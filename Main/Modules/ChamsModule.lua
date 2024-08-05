@@ -1,4 +1,3 @@
-
 --// Services
 local Players_service = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -36,7 +35,7 @@ end
 
 function update_chams()
     for _, player in pairs(get_players()) do
-        if player.Character then
+        if player.Character or player.CharacterAdded:wait() then
             local highlight = player.Character:FindFirstChildWhichIsA("Highlight")
             if ChamsModule.features.chams.enabled then
                 local ally = is_ally(player)
