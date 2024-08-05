@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 
 --// Variables
 local LocalPlayer = Players_service.LocalPlayer
-local Players = Players_service
+local Players = Players_service:GetPlayers()
 
 --// Tables
 ChamsModule = {}
@@ -28,37 +28,32 @@ ChamsModule.features = {
 
 --// Functions
 local function get_players()
-    return Players:GetPlayers()
+    return Players_service:GetPlayers()
 end
 
 local function is_ally(player)
     return player.Team == LocalPlayer.Team
 end
 
-function update_chams()
-    for _, player in pairs(get_players()) do
-        if player.Character then
-            local highlight = player.Character:FindFirstChildWhichIsA("Highlight")
-            if ChamsModule.features.chams.enabled then
-                local ally = is_ally(player)
-                local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
+local function apply_highlight(player)
+    if player and player.Character then
+        local character = player.Character
+        local highlight = character:FindFirstChildWhichIsA("Highlight")
 
-                if should_highlight then
-                    if not highlight then
-                        highlight = Instance.new("Highlight")
-                        highlight.Parent = player.Character
-                        print("Highlight created for player:", player.Name)
-                    end
-                    highlight.FillColor = ChamsModule.features.chams.color.fill
-                    highlight.OutlineColor = ChamsModule.features.chams.color.outline
-                    highlight.FillTransparency = ChamsModule.features.chams.ctransparency.fill
-                    highlight.OutlineTransparency = ChamsModule.features.chams.ctransparency.outline
-                else
-                    if highlight then
-                        highlight:Destroy()
-                        print("Highlight destroyed for player:", player.Name)
-                    end
+        if ChamsModule.features.chams.enabled then
+            local ally = is_ally(player)
+            local should_highlight = not ChamsModule.features.chams.teamcheck or (ChamsModule.features.chams.teamcheck and not ally)
+
+            if should_highlight then
+                if not highlight then
+                    highlight = Instance.new("Highlight")
+                    highlight.Parent = character
+                    print("Highlight created for player:", player.Name)
                 end
+                highlight.FillColor = ChamsModule.features.chams.color.fill
+                highlight.OutlineColor = ChamsModule.features.chams.color.outline
+                highlight.FillTransparency = ChamsModule.features.chams.ctransparency.fill
+                highlight.OutlineTransparency = ChamsModule.features.chams.ctransparency.outline
             else
                 if highlight then
                     highlight:Destroy()
@@ -66,8 +61,22 @@ function update_chams()
                 end
             end
         else
-            print("Player character not found for player:", player.Name)
+            if highlight then
+                highlight:Destroy()
+                print("Highlight destroyed for player:", player.Name)
+            end
         end
+    else
+        print("Player character not found or not yet loaded for player:", player.Name)
+        player.CharacterAdded:Connect(function(character)
+            apply_highlight(player)
+        end)
+    end
+end
+
+function update_chams()
+    for _, player in pairs(get_players()) do
+        apply_highlight(player)
     end
 end
 
