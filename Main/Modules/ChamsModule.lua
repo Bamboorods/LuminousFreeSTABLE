@@ -3,7 +3,7 @@ local ChamsModule = {}
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-
+local characterEventOn = false;
 local features = {
     chams = {
         enabled = false,
@@ -14,18 +14,16 @@ local features = {
 }
 
 
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect()
-end
 
 local function get_players()
+    --[[
     local entity_list = {}
-    for _, player in ipairs(Players:GetPlayers()) do
+    for _, player in ipairs() do
         if player:IsA("Model") then
             table.insert(entity_list, player)
         end
-    end
-    return entity_list
+    end ]]
+    return Players:GetPlayers()
 end
 
 local function is_ally(player)
@@ -37,7 +35,7 @@ local function is_ally(player)
     return helmet.BrickColor == BrickColor.new("Black") and LocalPlayer.Team == "Phantoms" or LocalPlayer.Team == "Ghosts"
 end
 
-local function onCharacterLoad(character)
+local function assignHighlight(character)
     local highlight = Instance.new("Highlight");
 
     highlight.FillColor = features.chams.color.fill
@@ -53,9 +51,26 @@ end
 
 
 
+local function onCharacterAdded(character)
+    assignHighlight(character);
+end
+
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(onCharacterAdded)
+end
+
 local function updateChams()
     for _, player in ipairs(get_players()) do
+        
+        if not characterEventOn then
+            assignHighlight(player.Character)
+            return;
+        end
+
+
         local highlight = player:FindFirstChild("Highlight")
+
 
         if not highlight then
             return;
@@ -66,8 +81,7 @@ local function updateChams()
             return;
         end
 
-        local ally = is_ally(player)
-        local shouldHighlight = not features.chams.teamcheck or (features.chams.teamcheck and not ally)
+        local shouldHighlight = not features.chams.teamcheck or (features.chams.teamcheck and not is_ally(player))
             
         if not shouldHighlight then
             highlight.Visible = false;
@@ -76,6 +90,7 @@ local function updateChams()
 
         highlight.Visible = true;
     end
+    characterEventOn = true;
 end
 
 function ChamsModule.setChamsEnabled(value)
