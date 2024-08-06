@@ -8,6 +8,12 @@ local Teams = game:GetService("Teams")
 local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
 local Library = nil;
 local ChamsModule = nil;
+local shared = {chams = {
+    enabled = false,
+    teamcheck = false,
+    color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
+    transparency = {fill = 0.74, outline = 0.38}
+}}
 
 --// Modules
 local function loadModule(url)
@@ -68,9 +74,9 @@ local ESPSection = VisualsTab:CreateSection({
 ESPSection:AddToggle({
     Name = "Toggle",
     Flag = "ESPSection_Enabled",
-    Value = ChamsModule.features.chams.enabled,
+    Value = ChamsModule.chams.enabled,
     Callback = function(state)
-        ChamsModule.setChamsEnabled(state)
+        chams = not chams
     end
 })
 
@@ -79,7 +85,7 @@ ESPSection:AddToggle({
     Flag = "ESPSection_TeamCheck",
     Value = ChamsModule.features.chams.teamcheck,
     Callback = function(state)
-        ChamsModule.setTeamCheck(state)
+        ChamsModule.setTeamCheckEnabled(state)
     end
 })
 
