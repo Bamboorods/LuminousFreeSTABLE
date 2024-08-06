@@ -84,6 +84,7 @@ end
 
 function ChamsModule:setChamsEnabled(value)
     ChamsModule.chams.enabled = value
+    updateChams()
 end
 
 function ChamsModule.isChamsEnabled()
