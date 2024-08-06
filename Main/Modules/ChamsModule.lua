@@ -1,5 +1,3 @@
-local ChamsModule = {}
-
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -94,6 +92,36 @@ RunService.RenderStepped:Connect(function()
         updateChams()
     end
 end)
+
+function ChamsModule.setChamsEnabled(state)
+    ChamsModule.features.chams.enabled = state
+    updateChams()
+end
+
+function ChamsModule.setTeamCheck(state)
+    ChamsModule.features.chams.teamcheck = state
+    updateChams()
+end
+
+function ChamsModule.setFillColor(color)
+    ChamsModule.features.chams.color.fill = color
+    updateChams()
+end
+
+function ChamsModule.setOutlineColor(color)
+    ChamsModule.features.chams.color.outline = color
+    updateChams()
+end
+
+function ChamsModule.setFillTransparency(value)
+    ChamsModule.features.chams.ctransparency.fill = value
+    updateChams()
+end
+
+function ChamsModule.setOutlineTransparency(value)
+    ChamsModule.features.chams.ctransparency.outline = value
+    updateChams()
+end
 
 
 return ChamsModule {
