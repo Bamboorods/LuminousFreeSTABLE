@@ -98,4 +98,35 @@ RunService.RenderStepped:Connect(function()
 end)
 
 
+function ChamsModule:setChamsEnabled(value)
+    self.chams.enabled = value
+    updateChams()
+end
+
+function ChamsModule:setTeamCheckEnabled(value)
+    self.chams.teamcheck = value
+    updateChams()
+end
+
+function ChamsModule:setFillColor(color)
+    self.chams.color.fill = color
+    updateChams()
+end
+
+function ChamsModule:setOutlineColor(color)
+    self.chams.color.outline = color
+    updateChams()
+end
+
+function ChamsModule:setFillTransparency(value)
+    self.chams.transparency.fill = value
+    updateChams()
+end
+
+function ChamsModule:setOutlineTransparency(value)
+    self.chams.transparency.outline = value
+    updateChams()
+end
+
+return ChamsModule
 return ChamsModule
