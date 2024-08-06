@@ -2,6 +2,8 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+local ChamsModule = {}
+
 local features = {
     chams = {
         enabled = false,
@@ -11,15 +13,14 @@ local features = {
     }
 }
 
-
 local function onPlayerAdded(player)
-    player.CharacterAdded:Connect()
+    player.CharacterAdded:Connect(onCharacterLoad)
 end
 
 local function get_players()
     local entity_list = {}
     for _, player in ipairs(Players:GetPlayers()) do
-        if player:IsA("Model") then
+        if player:IsA("Player") then
             table.insert(entity_list, player)
         end
     end
@@ -36,43 +37,33 @@ local function is_ally(player)
 end
 
 local function onCharacterLoad(character)
-    local highlight = Instance.new("Highlight");
+    local highlight = Instance.new("Highlight")
 
     highlight.FillColor = features.chams.color.fill
-
     highlight.OutlineColor = features.chams.color.outline
-
     highlight.FillTransparency = features.chams.transparency.fill
-
     highlight.OutlineTransparency = features.chams.transparency.outline
 
-    highlight.Parent = character;
+    highlight.Parent = character
 end
-
-
 
 local function updateChams()
     for _, player in ipairs(get_players()) do
-        local highlight = player:FindFirstChild("Highlight")
+        local highlight = player.Character and player.Character:FindFirstChild("Highlight")
 
         if not highlight then
-            return;
+            return
         end
 
         if not features.chams.enabled then
-            highlight.Visible = false;
-            return;
+            highlight.Visible = false
+            return
         end
 
         local ally = is_ally(player)
         local shouldHighlight = not features.chams.teamcheck or (features.chams.teamcheck and not ally)
-            
-        if not shouldHighlight then
-            highlight.Visible = false;
-            return
-        end
 
-        highlight.Visible = true;
+        highlight.Visible = shouldHighlight
     end
 end
 
@@ -85,6 +76,31 @@ function ChamsModule.isChamsEnabled()
     return features.chams.enabled
 end
 
+function ChamsModule.setTeamCheck(state)
+    features.chams.teamcheck = state
+    updateChams()
+end
+
+function ChamsModule.setFillColor(color)
+    features.chams.color.fill = color
+    updateChams()
+end
+
+function ChamsModule.setOutlineColor(color)
+    features.chams.color.outline = color
+    updateChams()
+end
+
+function ChamsModule.setFillTransparency(value)
+    features.chams.transparency.fill = value
+    updateChams()
+end
+
+function ChamsModule.setOutlineTransparency(value)
+    features.chams.transparency.outline = value
+    updateChams()
+end
+
 Players.PlayerAdded:Connect(onPlayerAdded)
 
 RunService.RenderStepped:Connect(function()
@@ -93,41 +109,4 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-function ChamsModule.setChamsEnabled(state)
-    ChamsModule.features.chams.enabled = state
-    updateChams()
-end
-
-function ChamsModule.setTeamCheck(state)
-    ChamsModule.features.chams.teamcheck = state
-    updateChams()
-end
-
-function ChamsModule.setFillColor(color)
-    ChamsModule.features.chams.color.fill = color
-    updateChams()
-end
-
-function ChamsModule.setOutlineColor(color)
-    ChamsModule.features.chams.color.outline = color
-    updateChams()
-end
-
-function ChamsModule.setFillTransparency(value)
-    ChamsModule.features.chams.ctransparency.fill = value
-    updateChams()
-end
-
-function ChamsModule.setOutlineTransparency(value)
-    ChamsModule.features.chams.ctransparency.outline = value
-    updateChams()
-end
-
-
-return ChamsModule {
-    setChamsEnabled = ChamsModule.setChamsEnabled,
-    isChamsEnabled = ChamsModule.isChamsEnabled,
-    onCharacterLoad = onCharacterLoad,
-    features = features,
-    get_players = get_players,
-}
+return ChamsModule
