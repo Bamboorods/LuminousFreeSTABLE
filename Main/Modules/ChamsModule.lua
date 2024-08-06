@@ -1,103 +1,132 @@
-local ChamsModule = {chams = {
+getgenv()["load_rewrite"] = true
+
+--// Services
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local Teams = game:GetService("Teams")
+local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
+local Library = nil;
+local ChamsModule = nil;
+local shared = {chams = {
     enabled = false,
     teamcheck = false,
     color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
     transparency = {fill = 0.74, outline = 0.38}
 }}
 
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
-local characterEventOn = false;
-
-
-
-local function get_players()
-    --[[
-    local entity_list = {}
-    for _, player in ipairs() do
-        if player:IsA("Model") then
-            table.insert(entity_list, player)
-        end
-    end ]]
-    return Players:GetPlayers()
-end
-
-local function is_ally(player)
-    if not player then return false end
-
-    local helmet = player:FindFirstChildWhichIsA("Folder"):FindFirstChildOfClass("MeshPart")
-    if not helmet then return false end
-
-    return helmet.BrickColor == BrickColor.new("Black") and LocalPlayer.Team == "Phantoms" or LocalPlayer.Team == "Ghosts"
-end
-
-local function assignHighlight(character)
-    local highlight = Instance.new("Highlight");
-
-    highlight.FillColor = ChamsModule.chams.color.fill
-
-    highlight.OutlineColor = ChamsModule.chams.color.outline
-
-    highlight.FillTransparency = ChamsModule.chams.transparency.fill
-
-    highlight.OutlineTransparency = ChamsModule.chams.transparency.outline
-
-    highlight.Parent = character;
-end
-
-
-
-local function onCharacterAdded(character)
-    assignHighlight(character);
-end
-
-
-local function onPlayerAdded(player)
-    player.CharacterAdded:Connect(onCharacterAdded)
-end
-
-local function updateChams()
-    for _, player in ipairs(get_players()) do
-        
-        if not characterEventOn then
-            assignHighlight(player.Character)
-            return;
-        end
-
-
-        local highlight = player:FindFirstChild("Highlight")
-
-
-        if not highlight then
-            return;
-        end
-
-        if not ChamsModule.chams.enabled then
-            highlight.Visible = false;
-            return;
-        end
-
-        local shouldHighlight = not ChamsModule.chams.teamcheck or (ChamsModule.chams.teamcheck and not is_ally(player))
-
-        highlight.Visible = shouldHighlight;
+--// Modules
+local function loadModule(url)
+    local success, module = pcall(function()
+        return loadstring(game:HttpGet(url, true))()
+    end)
+    if success then
+        return module
+    else
+        warn("Failed to load module from: " .. url)
+        warn(module);
+        return nil
     end
-    characterEventOn = true;
 end
 
-function ChamsModule:setChamsEnabled(value)
-    ChamsModule.chams.enabled = value
+Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua");
+
+ChamsModule = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Main/Modules/ChamsModule.lua")
+
+
+if not Library or not ChamsModule then
+    warn("One or more modules failed to load. Script will not continue.")
+    return
 end
 
-function ChamsModule.isChamsEnabled()
-    return ChamsModule.chams.enabled
-end
+local PepsisWorld = Library:CreateWindow({
+    Name = 'Luminous',
+    Themeable = {
+        Info = 'Luminous V0.5',
+        Credit = true,
+    },
+})
 
-Players.PlayerAdded:Connect(onPlayerAdded)
+task.wait(4)
 
-RunService.RenderStepped:Connect(function()
-    updateChams()
-end)
+Library.Notify({
+    Text = "Script Developed by 💿Bamboorods",
+    Duration = 2
+})
 
+local CombatTab = PepsisWorld:CreateTab({
+    Name = 'Combat'
+})
 
-return ChamsModule
+local VisualsTab = PepsisWorld:CreateTab({
+    Name = 'Visuals'
+})
+
+local MiscTab = PepsisWorld:CreateTab({
+    Name = 'Misc'
+})
+
+local ESPSection = VisualsTab:CreateSection({
+    Name = 'ESP',
+    Side = 'Left'
+})
+
+ESPSection:AddToggle({
+    Name = "Toggle",
+    Flag = "ESPSection_Enabled",
+    Value = ChamsModule.chams.enabled,
+    Callback = function(state)
+        chams = not chams
+    end
+})
+
+ESPSection:AddToggle({
+    Name = "Team Check",
+    Flag = "ESPSection_TeamCheck",
+    Value = ChamsModule.features.chams.teamcheck,
+    Callback = function(state)
+        ChamsModule.setTeamCheckEnabled(state)
+    end
+})
+
+ESPSection:AddColorPicker({
+    Name = "Fill Color",
+    Flag = "ESPSection_FillColor",
+    Value = ChamsModule.features.chams.color.fill,
+    Callback = function(color)
+        ChamsModule.setFillColor(color)
+    end
+})
+
+ESPSection:AddColorPicker({
+    Name = "Outline Color",
+    Flag = "ESPSection_OutlineColor",
+    Value = ChamsModule.features.chams.color.outline,
+    Callback = function(color)
+        ChamsModule.setOutlineColor(color)
+    end
+})
+
+ESPSection:AddSlider({
+    Name = "Fill Transparency",
+    Flag = "ESPSection_FillTransparency",
+    Value = ChamsModule.features.chams.ctransparency.fill,
+    Min = 0,
+    Max = 1,
+    Decimals = 2,
+    Callback = function(value)
+        ChamsModule.setFillTransparency(value)
+    end
+})
+
+ESPSection:AddSlider({
+    Name = "Outline Transparency",
+    Flag = "ESPSection_OutlineTransparency",
+    Value = ChamsModule.features.chams.ctransparency.outline,
+    Min = 0,
+    Max = 1,
+    Decimals = 2,
+    Callback = function(value)
+        ChamsModule.setOutlineTransparency(value)
+    end
+})
