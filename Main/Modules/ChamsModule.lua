@@ -1,4 +1,9 @@
-local ChamsModule = {}
+local ChamsModule = {chams = {
+    enabled = false,
+    teamcheck = false,
+    color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
+    transparency = {fill = 0.74, outline = 0.38}
+}}
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -30,13 +35,13 @@ end
 local function assignHighlight(character)
     local highlight = Instance.new("Highlight");
 
-    highlight.FillColor = shared.chams.color.fill
+    highlight.FillColor = ChamsModule.chams.color.fill
 
-    highlight.OutlineColor = shared.chams.color.outline
+    highlight.OutlineColor = ChamsModule.chams.color.outline
 
-    highlight.FillTransparency = shared.chams.transparency.fill
+    highlight.FillTransparency = ChamsModule.chams.transparency.fill
 
-    highlight.OutlineTransparency = shared.chams.transparency.outline
+    highlight.OutlineTransparency = ChamsModule.chams.transparency.outline
 
     highlight.Parent = character;
 end
@@ -54,32 +59,36 @@ end
 
 local function updateChams()
     for _, player in ipairs(get_players()) do
-        
-        if not characterEventOn then
-            assignHighlight(player.Character)
-            return;
+        local character = player.Character
+        if character then
+            if not characterEventOn then
+                assignHighlight(character)
+            else
+                local highlight = character:FindFirstChild("Highlight")
+                if not highlight then
+                    assignHighlight(character)
+                    highlight = character:FindFirstChild("Highlight")
+                end
+
+                if not ChamsModule.chams.enabled then
+                    highlight.Visible = false
+                else
+                    local shouldHighlight = not ChamsModule.chams.teamcheck or (ChamsModule.chams.teamcheck and not is_ally(player))
+                    highlight.Visible = shouldHighlight
+                end
+            end
         end
-
-
-        local highlight = player:FindFirstChild("Highlight")
-
-
-        if not highlight then
-            return;
-        end
-
-        if not shared.chams.enabled then
-            highlight.Visible = false;
-            return;
-        end
-
-        local shouldHighlight = not shared.chams.teamcheck or (shared.chams.teamcheck and not is_ally(player))
-
-        highlight.Visible = shouldHighlight;
     end
-    characterEventOn = true;
+    characterEventOn = true
 end
 
+function ChamsModule:setChamsEnabled(value)
+    ChamsModule.chams.enabled = value
+end
+
+function ChamsModule.isChamsEnabled()
+    return ChamsModule.chams.enabled
+end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 
