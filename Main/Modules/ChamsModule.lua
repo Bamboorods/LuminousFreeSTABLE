@@ -80,13 +80,6 @@ local function updateChams()
     characterEventOn = true;
 end
 
-function ChamsModule:setChamsEnabled(value)
-    ChamsModule.chams.enabled = value
-end
-
-function ChamsModule.isChamsEnabled()
-    return ChamsModule.chams.enabled
-end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 
