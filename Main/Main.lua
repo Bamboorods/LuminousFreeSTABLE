@@ -5,6 +5,9 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
+local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
+local Library = nil;
+local ChamsModule = nil;
 
 --// Modules
 local function loadModule(url)
@@ -15,27 +18,21 @@ local function loadModule(url)
         return module
     else
         warn("Failed to load module from: " .. url)
+        warn(module);
         return nil
     end
 end
 
-local Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua")
-local ChamsModule = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Main/Modules/ChamsModule.lua")
+Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua");
+
+ChamsModule = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Main/Modules/ChamsModule.lua")
+
 
 if not Library or not ChamsModule then
     warn("One or more modules failed to load. Script will not continue.")
     return
 end
 
-
---// Variables
-local LocalPlayer = Players.LocalPlayer
-
---// Tables
-
---// Functions
-
---// UI
 local PepsisWorld = Library:CreateWindow({
     Name = 'Luminous',
     Themeable = {
@@ -45,6 +42,7 @@ local PepsisWorld = Library:CreateWindow({
 })
 
 task.wait(4)
+
 Library.Notify({
     Text = "Script Developed by 💿Bamboorods",
     Duration = 2
@@ -81,7 +79,7 @@ ESPSection:AddToggle({
     Flag = "ESPSection_TeamCheck",
     Value = ChamsModule.features.chams.teamcheck,
     Callback = function(state)
-        ChamsModule.setTeamCheckEnabled(state)
+        ChamsModule.setTeamCheck(state)
     end
 })
 
