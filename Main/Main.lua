@@ -6,14 +6,16 @@ local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local Teams = game:GetService("Teams")
 local LocalPlayer = Players.LocalPlayer or game.Players.LocalPlayer
-local Library = nil;
-local ChamsModule = nil;
-local shared = {chams = {
-    enabled = false,
-    teamcheck = false,
-    color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
-    transparency = {fill = 0.74, outline = 0.38}
-}}
+local Library = nil
+local ChamsModule = nil
+local shared = {
+    chams = {
+        enabled = false,
+        teamcheck = false,
+        color = {fill = Color3.fromRGB(0, 7, 167), outline = Color3.fromRGB(0, 18, 64)},
+        transparency = {fill = 0.74, outline = 0.38}
+    }
+}
 
 --// Modules
 local function loadModule(url)
@@ -24,15 +26,13 @@ local function loadModule(url)
         return module
     else
         warn("Failed to load module from: " .. url)
-        warn(module);
+        warn(module)
         return nil
     end
 end
 
-Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua");
-
+Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua")
 ChamsModule = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Main/Modules/ChamsModule.lua")
-
 
 if not Library or not ChamsModule then
     warn("One or more modules failed to load. Script will not continue.")
@@ -47,7 +47,7 @@ local PepsisWorld = Library:CreateWindow({
     },
 })
 
-task.wait(4)
+
 
 Library.Notify({
     Text = "Script Developed by 💿Bamboorods",
@@ -74,17 +74,19 @@ local ESPSection = VisualsTab:CreateSection({
 ESPSection:AddToggle({
     Name = "Toggle",
     Flag = "ESPSection_Enabled",
-    Value = ChamsModule.chams.enabled,
+    Value = shared.chams.enabled,
     Callback = function(state)
-        chams = not chams
+        shared.chams.enabled = state
+        ChamsModule.setEnabled(state)
     end
 })
 
 ESPSection:AddToggle({
     Name = "Team Check",
     Flag = "ESPSection_TeamCheck",
-    Value = ChamsModule.features.chams.teamcheck,
+    Value = shared.chams.teamcheck,
     Callback = function(state)
+        shared.chams.teamcheck = state
         ChamsModule.setTeamCheckEnabled(state)
     end
 })
@@ -92,8 +94,9 @@ ESPSection:AddToggle({
 ESPSection:AddColorPicker({
     Name = "Fill Color",
     Flag = "ESPSection_FillColor",
-    Value = ChamsModule.features.chams.color.fill,
+    Value = shared.chams.color.fill,
     Callback = function(color)
+        shared.chams.color.fill = color
         ChamsModule.setFillColor(color)
     end
 })
@@ -101,8 +104,9 @@ ESPSection:AddColorPicker({
 ESPSection:AddColorPicker({
     Name = "Outline Color",
     Flag = "ESPSection_OutlineColor",
-    Value = ChamsModule.features.chams.color.outline,
+    Value = shared.chams.color.outline,
     Callback = function(color)
+        shared.chams.color.outline = color
         ChamsModule.setOutlineColor(color)
     end
 })
@@ -110,11 +114,12 @@ ESPSection:AddColorPicker({
 ESPSection:AddSlider({
     Name = "Fill Transparency",
     Flag = "ESPSection_FillTransparency",
-    Value = ChamsModule.features.chams.ctransparency.fill,
+    Value = shared.chams.transparency.fill,
     Min = 0,
     Max = 1,
     Decimals = 2,
     Callback = function(value)
+        shared.chams.transparency.fill = value
         ChamsModule.setFillTransparency(value)
     end
 })
@@ -122,11 +127,12 @@ ESPSection:AddSlider({
 ESPSection:AddSlider({
     Name = "Outline Transparency",
     Flag = "ESPSection_OutlineTransparency",
-    Value = ChamsModule.features.chams.ctransparency.outline,
+    Value = shared.chams.transparency.outline,
     Min = 0,
     Max = 1,
     Decimals = 2,
     Callback = function(value)
+        shared.chams.transparency.outline = value
         ChamsModule.setOutlineTransparency(value)
     end
 })
