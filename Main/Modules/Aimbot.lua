@@ -1,65 +1,78 @@
 --// Services
 local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local StarterGui = game:GetService("StarterGui")
-local Teams = game:GetService("Teams")
-
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 --// Variables
-local player = Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local AimbotEnabled = false
+local AimKey = Enum.KeyCode.V
+local AimPart = "HumanoidRootPart"
+local TeamCheck = false
+local FoVRadius = 100
 
---//Modules
-local function loadModule(url)
-    local success, module = pcall(function()
-        return loadstring(game:HttpGet(url, true))()
-    end)
-    if success then
-        return module
-    else
-        warn("Failed to load module from: " .. url)
-        return nil
+--// Functions
+local function isEnemy(player)
+    if TeamCheck then
+        return player.Team ~= LocalPlayer.Team
+    end
+    return true
+end
+
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = FoVRadius
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(AimPart) and isEnemy(player) then
+            local partPos = player.Character[AimPart].Position
+            local screenPos, onScreen = workspace.CurrentCamera:WorldToScreenPoint(partPos)
+            if onScreen then
+                local distance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).magnitude
+                if distance < shortestDistance then
+                    closestPlayer = player
+                    shortestDistance = distance
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+local function aimAt(target)
+    if target and target.Character and target.Character:FindFirstChild(AimPart) then
+        local aimPos = target.Character[AimPart].Position
+        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, aimPos)
     end
 end
 
-local Library = loadModule("https://raw.githubusercontent.com/Bamboorods/LuminousFreeSTABLE/UNSTABLEWIP/Dependencies/UiLibrary.lua")
+--// Event Listeners
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == AimKey then
+        AimbotEnabled = true
+    end
+end)
 
-if not Library then
-    warn("One or more modules failed to load. Script will not continue.")
-    return
-end
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == AimKey then
+        AimbotEnabled = false
+    end
+end)
 
-local Configuration = {
-    Aimbot = false,
-    Smoothing = false,
-    SmoothingValue = 0.5
-    AimKey = "RMB",
-    AimPart = "HumanoidRootPart",
-    TeamCheck = false,
-    WallCheck = false,
-    --Fov
-    Fov = false,,
-    FovRadius= 100,,
-    Fov.NumSides = 650,
-    Fov.Thickness = 2
-    FovTransparency = 0.5,
-    FovColour = Color3.fromRGB(255, 0, 0)
+RunService.RenderStepped:Connect(function()
+    if AimbotEnabled then
+        local target = getClosestPlayer()
+        aimAt(target)
+    end
+end)
+
+return {
+    Enable = function() AimbotEnabled = true end,
+    Disable = function() AimbotEnabled = false end,
+    SetAimKey = function(key) AimKey = key end,
+    SetAimPart = function(part) AimPart = part end,
+    SetTeamCheck = function(enabled) TeamCheck = enabled end,
+    SetFoVRadius = function(radius) FoVRadius = radius end
 }
-
-local function Visualize(Object)
-    if not Fluent or not getfenv().Drawing or not Object then
-        warn("UnableToObject")
-    elseif string.lower(Object) == "fov" then
-        local FoV = getfenv().Drawing.new("Circle")
-        FoV.Visible = false
-        if FoV.ZIndex then
-            FoV.ZIndex = 2
-        end
-        FoV.Filled = false
-        FoV.NumSides = 1000
-        FoV.Radius = Configuration.FoVRadius
-        FoV.Thickness = Configuration.FoVThickness
-        FoV.Transparency = Configuration.FoVTransparency
-        FoV.Color = Configuration.FoVColour
-        return FoV
-
-warn("true1111")
