@@ -1,4 +1,5 @@
 
+
 --// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -8,12 +9,12 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local AimbotEnabled = false
-local AimKey =  Enum.UserInputType.MouseButton2  -- Change to right mouse button
+local AimKey = Enum.KeyCode.V
 local AimPart = "HumanoidRootPart"
-local TeamCheck = true
-local FoVRadius = 500
-local ShowFoV = true
-local Smoothing = 5 
+local TeamCheck = false
+local FoVRadius = 700
+local ShowFoV = false
+local Smoothing = 5
 
 local CurrentTarget = nil  
 
@@ -68,14 +69,14 @@ end
 
 --// Event Listeners
 UserInputService.InputBegan:Connect(function(input)
-    if input.UserInputType == AimKey then
+    if input.KeyCode == AimKey then
         AimbotEnabled = true
         CurrentTarget = nil  
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == AimKey then
+    if input.KeyCode == AimKey then
         AimbotEnabled = false
         CurrentTarget = nil  
     end
@@ -97,4 +98,6 @@ RunService.RenderStepped:Connect(function()
         FoVCircle.Visible = false
     end
 end)
+
+
 
