@@ -1,4 +1,3 @@
-local AimbotModule = {}
 
 --// Services
 local Players = game:GetService("Players")
@@ -9,12 +8,12 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local AimbotEnabled = false
-local AimKey = Enum.KeyCode.V
+local AimKey =  Enum.UserInputType.MouseButton2  -- Change to right mouse button
 local AimPart = "HumanoidRootPart"
-local TeamCheck = false
-local FoVRadius = 700
-local ShowFoV = false
-local Smoothing = 10 
+local TeamCheck = true
+local FoVRadius = 500
+local ShowFoV = true
+local Smoothing = 5 
 
 local CurrentTarget = nil  
 
@@ -69,14 +68,14 @@ end
 
 --// Event Listeners
 UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == AimKey then
+    if input.UserInputType == AimKey then
         AimbotEnabled = true
         CurrentTarget = nil  
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if input.KeyCode == AimKey then
+    if input.UserInputType == AimKey then
         AimbotEnabled = false
         CurrentTarget = nil  
     end
@@ -99,15 +98,3 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-
-
-return AimbotModule{
-    Enable = function() AimbotEnabled = true end,
-    Disable = function() AimbotEnabled = false end,
-    SetAimKey = function(key) AimKey = key end,
-    SetAimPart = function(part) AimPart = part end,
-    SetTeamCheck = function(enabled) TeamCheck = enabled end,
-    SetFoVRadius = function(radius) FoVRadius = radius end,
-    SetSmoothing = function(value) Smoothing = value end,
-    ShowFoV = function(show) ShowFoV = show end
-}
