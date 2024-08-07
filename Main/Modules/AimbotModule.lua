@@ -9,11 +9,11 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local AimbotEnabled = false
-local AimKey = Enum.KeyCode.V
+local AimKey = Enum.KeyCode.T
 local AimPart = "HumanoidRootPart"
 local TeamCheck = false
-local FoVRadius = 700
-local ShowFoV = false
+local FoVRadius = 400
+local ShowFoV = true
 local Smoothing = 5
 
 local CurrentTarget = nil  
@@ -98,6 +98,5 @@ RunService.RenderStepped:Connect(function()
         FoVCircle.Visible = false
     end
 end)
-
 
 
